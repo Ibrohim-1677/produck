@@ -22,7 +22,7 @@
     <div class="row mt-5">
       <div class="col-3">
         <h2 class="h4 mb-4">Filter</h2>
-        <form action="#">
+        <form class="fitered" action="#">
           <div class="mb-3">
             <label for="search" class="form-label">Search</label>
             <input type="search" class="form-control" id="search" placeholder="Falonchi">
@@ -42,8 +42,9 @@
           <div class="mb-3">
             <label for="manufacturer" class="form-label">Manufacturer</label>
             <select class="form-select" id="manufacturer">
-              <option value="0">All</option>
-              <!-- manufacturers array bu yerga kelishi kerak -->
+              <option value="1">Name</option>
+              <option value="2">Price: to lowest</option>
+              <option value="3">Price: to highest</option>
             </select>
           </div>
 
@@ -103,7 +104,7 @@
                 <option selected disabled value="0">Select a manufacturer</option>
                 <option value="Apple">Apple</option>
                 <option value="Samsung">Samsung</option>
-                <option value="Red-mi">Red-mi</option>
+                <option value="xiomi">xiomi</option>
                 <option value="Poko">Poko</option>
               </select>
             </div>
@@ -149,7 +150,7 @@
                 <option value="Apple">Apple</option>
                 <option value="Samsung">Samsung</option>
                 <option value="Red-mi">Red-mi</option>
-                <option value="Poko">Poko</option>
+                <option value="poko">Poko</option>
               </select>
             </div>
             <div class="mb-3">

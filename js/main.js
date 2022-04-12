@@ -15,6 +15,8 @@ const showDate = function (string) {
 
     return `${addZero(date.getDate())}.${addZero(date.getMonth() + 1)}.${date.getFullYear()}`;
 }
+showingStudents = products.slice();
+
 
 const renderProduct = function (producty) {
     const {
@@ -32,6 +34,9 @@ const renderProduct = function (producty) {
 
     const elImg = paddelka("img", "card-img-top");
     elImg.src = img;
+    elImg.style.width = "264px"
+    elImg.style.height = "200px"
+
 
     const elCardBody = paddelka("div", "card-body");
     const elTitle = paddelka("h3", "card-title");
@@ -95,6 +100,15 @@ const renderProduct = function (producty) {
 
 }
 
+const renderProducts = function() {
+    elproducsWrapper.innerHTML="";
+    
+    showingStudents.forEach(function(product){
+        const elproduct = renderProduct(product);
+        elproducsWrapper.append(elproduct);
+    });
+  }
+
 const addForm = document.querySelector(".add-form");
 const produktModal = new bootstrap.Modal(document.querySelector("#add-product-modal"));
 
@@ -126,12 +140,15 @@ addForm.addEventListener("submit", function (evt) {
             addedDate: new Date().toISOString(),
             benefits: featureValue
         }
+
         products.push(product);
+    
+        showingStudents.push(product);
 
         addForm.reset();
         produktModal.hide();    
-        const elproduct = renderProduct(product);
-        elproducsWrapper.append(elproduct);
+        
+        renderProducts();
     }
 
 });
@@ -139,6 +156,7 @@ const elUl = document.querySelector("#list");
 const editPrise= document.querySelector("#edit-price")
 const editTitle = document.querySelector("#edit-productTitle")
 const editBenefits = document.querySelector("#edit-benefits")
+    const editseclect = document.querySelector("#ediProductManufacturer")
 
 elUl.addEventListener("click", function(evt){
      if (evt.target.matches(".btn-danger")){
@@ -153,14 +171,22 @@ elUl.addEventListener("click", function(evt){
             const elproduct = renderProduct(product);
             elproducsWrapper.append(elproduct);
         });
+            elUl.innerHTML="";
+            products.forEach(function(product){
+                const elproduct = renderProduct(product);
+                elproducsWrapper.append(elproduct);
+            });
+
      }else if (evt.target.matches(".btn-secondary")){
           const clikkedId = +evt.target.dataset.id;
           
           const clikkedItem = products.find(function(product){
           return product.id === clikkedId;
           })
+          console.log(clikkedId);
           editTitle.value = clikkedItem.title;
           editPrise.value = clikkedItem.price;
+          editseclect.value = clikkedItem.model;
           editBenefits.value = clikkedItem.benefits;
           editForm.setAttribute("data-editing-id", clikkedItem.id);
      }
@@ -173,10 +199,15 @@ products.forEach(function(product){
 const editForm = document.querySelector("#edit-form")
 
 const produktModalEl = new bootstrap.Modal(document.querySelector("#edit-product-modal"));
+// const editseclect = document.querySelector("#ediProductManufacturer")
 
 
 editForm.addEventListener("submit", function (evt) {
     evt.preventDefault()
+
+
+
+    const select = evt.target.elements.productManufacturer;
 
     const editingId = +evt.target.dataset.editingId
 
@@ -192,6 +223,7 @@ editForm.addEventListener("submit", function (evt) {
             title:nameValue,
             img: "https://picsum.photos/300/200",
             price: priceValue,
+            model:editseclect.value,
             addedDate: new Date().toISOString(),
             benefits: featureValue
         }
@@ -200,19 +232,68 @@ editForm.addEventListener("submit", function (evt) {
         const edittedItem = products.findIndex(function(product){
             return product.id === editingId;
             })
+            const editingShowItemIndex = showingStudents.findIndex(function(product) {
+                return product.id === editingId
+              });
 
             products.splice(edittedItem, 1, productr);
+            showingStudents.splice(editingShowItemIndex, 1, productr);
 
         editForm.reset();    
         produktModalEl.hide();
 
-        elUl.innerHTML="";
-        products.forEach(function(product){
-            const elproduct = renderProduct(product);
-            elproducsWrapper.append(elproduct);
-        });
+        renderProducts();
 
     }
 
 });
+
+
+
+const filterForm = document.querySelector(".fitered")
+
+filterForm.addEventListener("submit", function(evt){
+    evt.preventDefault();
+    
+
+    const produts = evt.target.elements;
+
+    const searchValue = produts.search.value;
+    const toValue = produts.to.value;
+    const fromValue = produts.from.value;
+    const sortValue = produts.sortby.value;
+
+    showingStudents = products
+     .sort(function(a, b) {
+      switch (sortValue) {
+        case "1":
+          if (a.title > b.title) {
+            return 1
+          } else if (a.title < b.title) {
+            return -1
+          } else {
+            return 0
+          }
+        case "2":
+          return b.price - a.price
+        case "3":
+          return a.price - b.price
+        default:
+          break;
+     }
+    })
+    .filter(function(product) {
+        const productPrice = product.price;
+        const searchRegExp = new RegExp(searchValue, "gi");
+        const producktTitle = product.title;
+  
+        const toMarkCondition = !toValue ? true : productPrice <= toValue;
+        console.log(toMarkCondition);
+        return productPrice >= fromValue && toMarkCondition && producktTitle.match(searchRegExp)
+      })
+
+
+    renderProducts();
+
+})
 
